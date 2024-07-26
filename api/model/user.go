@@ -1,6 +1,10 @@
 package model
 
-import "net/http"
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+)
 
 type User struct {
 	Id       int    `json:"id"`
