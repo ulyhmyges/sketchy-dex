@@ -29,10 +29,10 @@ func Disconnect(conn *pgx.Conn) {
 	log.Println("Disconnect from daatabase")
 }
 
-func Connection(path_env_file string) *pgx.Conn {
-	err := godotenv.Load(path_env_file)
+func Connection() *pgx.Conn {
+	err := godotenv.Load(".env")
 	if err != nil {
-		log.Fatal("Unable to load .env file!")
+		log.Println("Unable to load .env file!")
 	}
 	url := os.Getenv("DATABASE_URL")
 	if url == "" {

@@ -4,12 +4,36 @@ volumes:
   db_data:
 
 services:
+  app:
+    build:
+      context: app
+      dockerfile: Dockerfile
+    container_name: container_app
+    ports:
+      - 3000:3000
+  
+  api:
+    build:
+      context: api
+      dockerfile: Dockerfile
+    container_name: container_api
+    ports:
+      - 8001:8001
+    environment:
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+      - DATABASE_URL=postgres://${DB_USER}:${DB_PASSWORD}@postgres:${DB_PORT}/${DB_NAME}
+
+    depends_on:
+      - postgres
+  
   postgres:
     image: postgres:15
     container_name: container_pg
     environment:
-      - POSTGRES_USER=${USER}
-      - POSTGRES_PASSWORD=${PASSWORD}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
       - POSTGRES_DB=${DB_NAME}
     ports:
       - ${DB_PORT}:5432

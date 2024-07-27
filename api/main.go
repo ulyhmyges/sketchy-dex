@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	pg := database.Connection("../.env")
+	pg := database.Connection()
 	defer database.Disconnect(pg)
 	route.RunServer()
 }
