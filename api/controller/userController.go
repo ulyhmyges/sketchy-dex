@@ -1,6 +1,7 @@
-package model
+package controller
 
 import (
+	"api/model"
 	"log"
 	"net/http"
 	"strconv"
@@ -8,14 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type User struct {
-	Id       int    `json:"id"`
-	Username string `json:"username"`
-	Password string `json:"password"`
-	Address  string `json:"address"`
-}
-
-var users = []User{
+var users = []model.User{
 	{Id: 1, Username: "test", Password: "test", Address: "0xkroe453"},
 	{Id: 2, Username: "username", Password: "password", Address: "address..."},
 }
@@ -25,7 +19,7 @@ func GetUsers(context *gin.Context) {
 }
 
 func PostUsers(c *gin.Context) {
-	var user User
+	var user model.User
 
 	// Use Context.BindJSON to bind the request body to user.
 	if err := c.BindJSON(&user); err != nil {

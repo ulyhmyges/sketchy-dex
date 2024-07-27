@@ -8,9 +8,9 @@ services:
     image: postgres:15
     container_name: container_pg
     environment:
-      - POSTGRES_USER=esgi
-      - POSTGRES_PASSWORD=esgi
-      - POSTGRES_DB=dex
+      - POSTGRES_USER=${USER}
+      - POSTGRES_PASSWORD=${PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
     ports:
       - ${DB_PORT}:5432
     volumes:
