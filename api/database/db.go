@@ -9,12 +9,13 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-func Connect() *pgx.Conn {
-	conn, err := pgx.Connect(context.Background(), os.Getenv("DATABASE_URL"))
+func Connect(url string) *pgx.Conn {
+	conn, err := pgx.Connect(context.Background(), url)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "===Unable to connect to database: %v\n===", err)
 		log.Fatal()
 	}
+	fmt.Println("======Successfully connected to database!=====")
 	return conn
 }
 
