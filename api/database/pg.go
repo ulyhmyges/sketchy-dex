@@ -7,13 +7,13 @@ import (
 	"os"
 
 	"github.com/jackc/pgx/v5"
-	"github.com/joho/godotenv"
 )
 
 func Connect(url string) *pgx.Conn {
 	conn, err := pgx.Connect(context.Background(), url)
+	log.Println("URL= ", url)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "===Unable to connect to database: %v\n===", err)
+		fmt.Fprintf(os.Stderr, "===Unable to connect to database: %v\n===\n", err)
 		log.Fatal()
 	}
 	fmt.Println("======Successfully connected to database!=====")
@@ -26,14 +26,10 @@ func Disconnect(conn *pgx.Conn) {
 		fmt.Fprintf(os.Stderr, "Unable to disconnect from database: %v\n", err)
 		return
 	}
-	log.Println("Disconnect from daatabase")
+	log.Println("Disconnect from database")
 }
 
 func Connection() *pgx.Conn {
-	err := godotenv.Load(".env")
-	if err != nil {
-		log.Println("Unable to load .env file!")
-	}
 	url := os.Getenv("DATABASE_URL")
 	if url == "" {
 		log.Fatalln("Empty DATABASE_URL variable")

@@ -6,7 +6,7 @@ var router = gin.Default()
 
 func RunServer() {
 	getRoutes()
-	router.Run("localhost:8001")
+	router.Run(":8080")
 }
 
 func getRoutes() {
