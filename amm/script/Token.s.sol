@@ -9,7 +9,7 @@ contract TokenScript is Script {
     address public wallet;
 
     function run() public {
-        vm.startBroadcast(vm.envUint("PRIVATE_KEY"));
+        vm.startBroadcast(vm.envUint("PK"));
 
         wallet = vm.envAddress("WALLET_ADDRESS");
         token = new Token(50, "MyToken", "MTK", wallet);
