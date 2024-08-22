@@ -8,17 +8,17 @@ import {Token} from "../src/Token.sol";
 contract TokenFactoryTest is Test {
     TokenFactory public factory;
     Token public myToken;
-
-    address public myAdd = vm.envAddress("WALLET_ADDRESS");
+    address public wallet = vm.envAddress("WALLET_ADDRESS");
 
     function setUp() public {
-        vm.startPrank(myAdd);
+        vm.startPrank(wallet);
         factory = new TokenFactory();
         vm.stopPrank();
     }
 
     function test_getTokenNumber(uint256 supply, string memory name, string memory symbol) public {
-        vm.startPrank(myAdd);
+        vm.startPrank(wallet);
+
         assertEq(factory.getTokenNumber(), 0);
 
         // create a token
@@ -28,16 +28,19 @@ contract TokenFactoryTest is Test {
         vm.stopPrank();
     }
 
-    // function test_getTokens() public view {
-    //     address[] memory tokens = tk.getTokens();
-    //     uint256 len = tokens.length;
-    //     assertEq(len, 0);
-    // }
+    // getTokens returns an array of token addresses
+    function test_getTokens(uint256 supply, string memory name, string memory symbol) public {
+        assertEq(factory.getTokens().length, 0);
+        vm.startPrank(wallet);
+        factory.createToken(supply, name, symbol);
+        assertEq(factory.getTokens().length, 1);
+        vm.stopPrank();
+    }
 
     // function test_createToken(uint256 initialSupply, string memory name, string memory symbol) public {
     //     vm.startPrank(myAdd);
-    //     tk.createToken(initialSupply, name, symbol);
-    //     address[] memory tokens = tk.getTokens();
+    //     factory.createToken(initialSupply, name, symbol);
+    //     address[] memory tokens = factory.getTokens();
 
     //     address add = tokens[0];
     //     myToken = Token(add);
@@ -46,28 +49,30 @@ contract TokenFactoryTest is Test {
     //     assertEq(myToken.symbol(), symbol);
     //     assertEq(myToken.name(), name);
     //     assertEq(myToken.totalSupply(), initialSupply);
-    //     assertEq(myToken.balanceOf(address(tk)), initialSupply);
+    //     assertEq(myToken.balanceOf(address(factory)), initialSupply);
     //     assertEq(myToken.decimals(), 18);
 
     //     // test supply stored on mapping tokenToSupply
-    //     assertEq(tk.getSupply(add), initialSupply);
-    //     assertEq(tk.getTokenNumber(), 1);
+    //     assertEq(factory.getSupply(add), initialSupply);
+    //     assertEq(factory.getTokenNumber(), 1);
     //     vm.stopPrank();
     // }
 
-    // function test_getSupply(uint256 supply, string memory name, string memory symbol) public {
-    //     vm.startPrank(myAdd);
-    //     assertEq(tk.getTokenNumber(), 0);
-    //     tk.createToken(supply, name, symbol);
-    //     assertEq(tk.getTokenNumber(), 1);
-    //     address tokenAddress = tk.getTokens()[0];
-    //     assertEq(tk.getSupply(tokenAddress), supply);
-    //     assertEq(address(tk).balance, 0);
-    //     assertEq(Token(tokenAddress).balanceOf(address(tk)), supply);
-    //     vm.stopPrank();
-    // }
+    function test_getSupply(uint256 supply, string memory name, string memory symbol) public {
+        vm.startPrank(wallet);
+
+        // create a token and get its address
+        factory.createToken(supply, name, symbol);
+        address tokenAddress = factory.getTokens()[0];
+
+        assertEq(factory.getSupply(tokenAddress), supply);
+        assertEq(address(factory).balance, 0);
+        assertEq(Token(tokenAddress).balanceOf(address(factory)), supply);
+        
+        vm.stopPrank();
+    }
 
     // function test_getTokenNumber_after() public view {
-    //     assertEq(tk.getTokenNumber(), 1);
+    //     assertEq(factory.getTokenNumber(), 1);
     // }
 }
