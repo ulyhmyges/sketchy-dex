@@ -12,36 +12,34 @@ contract LiquidityPoolTest is Test {
     address public addrB;
     LiquidityPool public lp;
 
-    address public myAddress = vm.envAddress("WALLET_ADDRESS");
+    address public wallet = vm.envAddress("WALLET_ADDRESS");
 
     function setUp() public {
-        vm.startPrank(myAddress);
+        vm.startPrank(wallet);
 
         tk = new TokenFactory();
-        tk.createToken(500, "nameA", "A");
-        tk.createToken(300, "nameB", "B");
+        tk.createToken(500, "TokenA", "TA");
+        tk.createToken(300, "TokenB", "TB");
         addrA = tk.getTokens()[0];
         addrB = tk.getTokens()[1];
-        console.log(Token(addrA).balanceOf(address(tk)));
-        console.log(Token(addrB).balanceOf(address(tk)));
 
         lp = new LiquidityPool(addrA, addrB);
         vm.stopPrank();
-        lp = new LiquidityPool(addrA, addrB);
+        //lp = new LiquidityPool(addrA, addrB);
 
     }
 
     function test_TokenNumber() public {
-        vm.startPrank(myAddress);
+        vm.startPrank(wallet);
         assertEq(tk.getTokenNumber(), 2);
         vm.stopPrank();
     }
 
     function test_addLiquidity() public {
         //vm.startPrank(address(tk));
-        vm.startPrank(myAddress);
-        console.log(Token(addrA).balanceOf(myAddress));
-        console.log(Token(addrB).balanceOf(myAddress));
+        vm.startPrank(wallet);
+        console.log(Token(addrA).balanceOf(wallet));
+        console.log(Token(addrB).balanceOf(wallet));
 
         Token(addrA).approve(address(lp), 7);
         Token(addrB).approve(address(lp), 50);
@@ -51,7 +49,7 @@ contract LiquidityPoolTest is Test {
     }
 
     function test_getReserves() public {
-        vm.startPrank(myAddress);
+        vm.startPrank(wallet);
 
         // addLiquidity
         Token(addrA).approve(address(lp), 70);
@@ -76,58 +74,63 @@ contract LiquidityPoolTest is Test {
         vm.stopPrank();
     }
 
-    // function test_removeLiquidity() public {
-    //     vm.startPrank(address(tk));
+    function test_removeLiquidity() public {
+        vm.startPrank(wallet);
 
-    //     assertEq(Token(addrA).balanceOf(address(tk)), 500);
-    //     assertEq(Token(addrB).balanceOf(address(tk)), 300);
-    //     assertEq(Token(addrA).balanceOf(address(lp)), 0);
-    //     assertEq(Token(addrB).balanceOf(address(lp)), 0);
+        assertEq(Token(addrA).balanceOf(wallet), 500);
+        assertEq(Token(addrB).balanceOf(wallet), 300);
+        assertEq(Token(addrA).balanceOf(address(lp)), 0);
+        assertEq(Token(addrB).balanceOf(address(lp)), 0);
 
-    //     Token(addrA).approve(address(lp), 70);
-    //     Token(addrB).approve(address(lp), 50);
-    //     uint256 lpNumber = lp.addLiquidity(70, 50);
-    //     assertEq(lpNumber, 120);
+        Token(addrA).approve(address(lp), 100);
+        Token(addrB).approve(address(lp), 50);
+        uint256 lpNumber = lp.addLiquidity(100, 50);
+        assertEq(lpNumber, 150);
 
-    //     assertEq(Token(addrA).balanceOf(address(tk)), 430);
-    //     assertEq(Token(addrB).balanceOf(address(tk)), 250);
+        assertEq(Token(addrA).balanceOf(wallet), 400);
+        assertEq(Token(addrB).balanceOf(wallet), 250);
 
-    //     assertEq(Token(addrA).balanceOf(address(lp)), 70);
-    //     assertEq(Token(addrB).balanceOf(address(lp)), 50);
+        assertEq(Token(addrA).balanceOf(address(lp)), 100);
+        assertEq(Token(addrB).balanceOf(address(lp)), 50);
 
-    //     (uint256 amountA, uint256 amountB) = lp.removeLiquidity(100);
-    //     console.log(amountA, amountB);
+        (uint256 amountA, uint256 amountB) = lp.removeLiquidity(100); 
+        console.log(amountA, amountB);  // 66, 33
 
-    //     assertEq(Token(addrA).balanceOf(address(lp)), 70 - amountA);
-    //     assertEq(Token(addrB).balanceOf(address(lp)), 50 - amountB);
+        assertEq(Token(addrA).balanceOf(address(lp)), 100 - amountA); // 34
+        assertEq(Token(addrB).balanceOf(address(lp)), 50 - amountB); // 17
 
-    //     assertEq(Token(addrA).balanceOf(address(tk)), 430 + amountA);
-    //     assertEq(Token(addrB).balanceOf(address(tk)), 250 + amountB);
-    //     vm.stopPrank();
-    // }
+        assertEq(Token(addrA).balanceOf(wallet), 400 + amountA);
+        assertEq(Token(addrA).balanceOf(wallet), 466);
 
-    //     function test_swap() public {
-    //         vm.startPrank(address(tk));
+        assertEq(Token(addrB).balanceOf(wallet), 250 + amountB);
+        assertEq(Token(addrB).balanceOf(wallet), 283);
+        
+        vm.stopPrank();
+    }
 
-    //         // addLiquidity
-    //         Token(addrA).approve(address(lp), 70);
-    //         Token(addrB).approve(address(lp), 200);
-    //         lp.addLiquidity(70, 200);
-    //         console.log("msg.sender:: ", msg.sender);
+        function test_swap() public {
+            vm.startPrank(wallet);
 
-    //         Token(addrA).approve(address(lp), 10);
-    //         uint256 quantityB = Token(addrB).balanceOf(address(tk));
+            // addLiquidity
+            Token(addrA).approve(address(lp), 400);
+            Token(addrB).approve(address(lp), 200);
+            lp.addLiquidity(400, 200);
+            console.log("msg.sender:: ", msg.sender);
 
-    //         uint256 amountB = lp.swap(10, addrA, addrB);
-    //         console.log("amountB: ", amountB);
-    //         assertEq(quantityB + amountB, Token(addrB).balanceOf(address(tk)));
+            // swap
+            Token(addrA).approve(address(lp), 100);
+            uint256 quantityB = Token(addrB).balanceOf(wallet);
 
-    //         Token(addrB).approve(address(lp), 10);
-    //         uint256 quantityA = Token(addrA).balanceOf(address(tk));
+            uint256 amountB = lp.swap(100, addrA, addrB);
+            console.log("amountB: ", amountB);
+            assertEq(quantityB + amountB, Token(addrB).balanceOf(wallet));
 
-    //         uint256 amountA = lp.swap(2, addrB, addrA);
-    //         assertEq(quantityA + amountA, Token(addrA).balanceOf(address(tk)));
+            Token(addrB).approve(address(lp), 50);
+            uint256 quantityA = Token(addrA).balanceOf(wallet);
 
-    //         vm.stopPrank();
-    //     }
+            uint256 amountA = lp.swap(50, addrB, addrA);
+            assertEq(quantityA + amountA, Token(addrA).balanceOf(wallet));
+
+            vm.stopPrank();
+        }
 }

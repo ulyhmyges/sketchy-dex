@@ -62,12 +62,17 @@ contract TokenFactoryTest is Test {
         vm.startPrank(wallet);
 
         // create a token and get its address
-        factory.createToken(supply, name, symbol);
+        //factory.createToken(supply, name, symbol);
+        console.log("args: ", supply, name, symbol);
+        factory.createToken(4567, "TOTO", "TT");
         address tokenAddress = factory.getTokens()[0];
 
-        assertEq(factory.getSupply(tokenAddress), supply);
+        assertEq(factory.getSupply(tokenAddress), 4567);
         assertEq(address(factory).balance, 0);
-        assertEq(Token(tokenAddress).balanceOf(address(factory)), supply);
+
+        // total supply of created token
+        assertEq(Token(tokenAddress).balanceOf(address(factory)), 0);
+        assertEq(Token(tokenAddress).balanceOf(wallet), 4567);
         
         vm.stopPrank();
     }

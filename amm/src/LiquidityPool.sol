@@ -9,6 +9,7 @@ contract LiquidityPool {
 
     IERC20 public tokenA;
     IERC20 public tokenB;
+
     uint256 public reserveA;
     uint256 public reserveB;
     mapping(address => uint256) public liquidity;
@@ -33,7 +34,6 @@ contract LiquidityPool {
         require(amountA > 0 && amountB > 0, "Invalid amounts");
 
         tokenA.transferFrom(msg.sender, address(this), amountA);
-
         tokenB.transferFrom(msg.sender, address(this), amountB);
 
         uint256 liquidityMinted = amountA + amountB; // Simplified liquidity calculation
